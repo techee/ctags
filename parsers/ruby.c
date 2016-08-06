@@ -568,4 +568,3 @@ extern parserDefinition* RubyParser (void)
 }
 
 /* vi:set tabstop=4 shiftwidth=4: */
-
