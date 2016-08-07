@@ -71,9 +71,9 @@ static void makeTagRecursively (xmlNode *node,
 				void *userData);
 
 static void makeTagForProperties (xmlNode *node,
-				  const struct sTagXpathRecurSpec *spec __unused__,
-				  xmlXPathContext *ctx __unused__,
-				  void *userData __unused__)
+				  const struct sTagXpathRecurSpec *spec UNUSED,
+				  xmlXPathContext *ctx UNUSED,
+				  void *userData UNUSED)
 {
 	const xmlChar* str;
 	tagEntryInfo tag;
@@ -233,7 +233,7 @@ findMaven2TagsForTable (enum maven2XpathTable tindex,
 static void makeTagRecursively (xmlNode *node,
 				  const struct sTagXpathRecurSpec *spec,
 				  xmlXPathContext *ctx,
-				  void *userData __unused__)
+				  void *userData UNUSED)
 {
 	findMaven2TagsForTable (spec->nextTable, node, ctx);
 }

@@ -570,10 +570,10 @@ static boolean printXcmdKind (kindOption *kind, void *user_data)
 }
 #endif
 
-extern void printXcmdKinds (const langType language __unused__,
-			    boolean allKindFields __unused__,
-			    boolean indent __unused__,
-			    boolean tabSeparated __unused__)
+extern void printXcmdKinds (const langType language UNUSED,
+			    boolean allKindFields UNUSED,
+			    boolean indent UNUSED,
+			    boolean tabSeparated UNUSED)
 {
 #ifdef HAVE_COPROC
 	if (language <= SetUpper  &&  Sets [language].count > 0)
@@ -657,7 +657,7 @@ extern void addTagXcmd (const langType language, vString* pathvstr, const char* 
 #endif
 }
 extern void addLanguageXcmd (
-	const langType language __unused__, const char* const parameter __unused__)
+	const langType language UNUSED, const char* const parameter UNUSED)
 {
 #ifdef HAVE_COPROC
 	char *path;

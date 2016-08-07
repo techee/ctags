@@ -15,15 +15,15 @@
 /*  Prevent warnings about unused variables in GCC. */
 #if defined (__GNUC__) && !defined (__GNUG__)
 # ifdef __MINGW32__
-#  define __unused__
+#  define UNUSED
 # else
-#  define __unused__ __attribute__((unused))
+#  define UNUSED __attribute__((unused))
 # endif
-# define __printf__(s,f)  __attribute__((format (printf, s, f)))
+# define PRINTF(s,f)  __attribute__((format (printf, s, f)))
 # define attr__noreturn __attribute__((__noreturn__))
 #else
-# define __unused__
-# define __printf__(s,f)
+# define UNUSED
+# define PRINTF(s,f)
 # define attr__noreturn
 #endif
 

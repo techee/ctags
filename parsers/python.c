@@ -139,12 +139,12 @@ static boolean isIdentifierFirstCharacter (int c)
 	return (boolean) (isalpha (c) || c == '_');
 }
 
-static boolean isIdentifierFirstCharacterCB (int c, void *dummy __unused__)
+static boolean isIdentifierFirstCharacterCB (int c, void *dummy UNUSED)
 {
 	return isIdentifierFirstCharacter (c);
 }
 
-static boolean isModuleFirstCharacterCB (int c, void *dummy __unused__)
+static boolean isModuleFirstCharacterCB (int c, void *dummy UNUSED)
 {
 	return (boolean) (isIdentifierFirstCharacter (c) || c == '.');
 }
@@ -639,7 +639,7 @@ nextLine:
 	vStringDelete (name_next);
 }
 
-static void parseFromModule (const char *cp, const char* dummy __unused__)
+static void parseFromModule (const char *cp, const char* dummy UNUSED)
 {
 	vString *from_module;
 	vString *import_keyword;

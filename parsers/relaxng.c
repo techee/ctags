@@ -210,8 +210,8 @@ findRelaxNGTags (void)
 }
 
 static void
-makeTagWithScope (xmlNode *node __unused__,
-		  const struct sTagXpathMakeTagSpec *spec __unused__,
+makeTagWithScope (xmlNode *node UNUSED,
+		  const struct sTagXpathMakeTagSpec *spec UNUSED,
 		  struct sTagEntryInfo *tag,
 		  void *userData)
 {

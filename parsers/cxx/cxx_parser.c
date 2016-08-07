@@ -1386,7 +1386,7 @@ void cxxCParserInitialize(const langType language)
 	cxxBuildKeywordHash(language,FALSE);
 }
 
-void cxxParserCleanup (langType language __unused__, boolean initialized __unused__)
+void cxxParserCleanup (langType language UNUSED, boolean initialized UNUSED)
 {
 	if(g_bFirstRun)
 		return; // didn't run at all
