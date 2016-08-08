@@ -446,7 +446,7 @@ extern void openTagFile (void)
 
 #ifdef USE_REPLACEMENT_TRUNCATE
 
-static void copyBytes (MIO* const fromFp, MIO* const toFp, const long size)
+static void copyBytes (MIO* const fromMio, MIO* const toMio, const long size)
 {
 	enum { BufferSize = 1000 };
 	long toRead, numRead;
@@ -456,8 +456,8 @@ static void copyBytes (MIO* const fromFp, MIO* const toFp, const long size)
 	{
 		toRead = (0 < remaining && remaining < BufferSize) ?
 					remaining : (long) BufferSize;
-		numRead = mio_read (fromFp, buffer, (size_t) 1, (size_t) toRead);
-		if (mio_write (toFp, buffer, (size_t)1, (size_t)numRead) < (size_t)numRead)
+		numRead = mio_read (fromMio, buffer, (size_t) 1, (size_t) toRead);
+		if (mio_write (toMio, buffer, (size_t)1, (size_t)numRead) < (size_t)numRead)
 			error (FATAL | PERROR, "cannot complete write");
 		if (remaining > 0)
 			remaining -= numRead;
@@ -467,20 +467,20 @@ static void copyBytes (MIO* const fromFp, MIO* const toFp, const long size)
 
 static void copyFile (const char *const from, const char *const to, const long size)
 {
-	MIO* const fromFp = mio_new_file (from, "rb");
-	if (fromFp == NULL)
+	MIO* const fromMio = mio_new_file_full (from, "rb", g_fopen, fclose);
+	if (fromMio == NULL)
 		error (FATAL | PERROR, "cannot open file to copy");
 	else
 	{
-		MIO* const toFp = mio_new_file (to, "wb");
-		if (toFp == NULL)
+		MIO* const toMio = mio_new_file_full (to, "wb", g_fopen, fclose);
+		if (toMio == NULL)
 			error (FATAL | PERROR, "cannot open copy destination");
 		else
 		{
-			copyBytes (fromFp, toFp, size);
-			mio_free (toFp);
+			copyBytes (fromMio, toMio, size);
+			mio_free (toMio);
 		}
-		mio_free (fromFp);
+		mio_free (fromMio);
 	}
 }
 
@@ -489,8 +489,8 @@ static void copyFile (const char *const from, const char *const to, const long s
 static int replacementTruncate (const char *const name, const long size)
 {
 	char *tempName = NULL;
-	MIO *fp = tempFile ("w", &tempName);
-	mio_free (fp);
+	MIO *mio = tempFile ("w", &tempName);
+	mio_free (mio);
 	copyFile (name, tempName, size);
 	copyFile (tempName, name, WHOLE_FILE);
 	remove (tempName);
