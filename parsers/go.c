@@ -88,8 +88,17 @@ typedef enum {
 	GOTAG_VAR,
 	GOTAG_STRUCT,
 	GOTAG_INTERFACE,
-	GOTAG_MEMBER
+	GOTAG_MEMBER,
+	GOTAG_UNKNOWN,
 } goKind;
+
+typedef enum {
+	R_GOTAG_UNKNOWN_RECEIVER,
+} GoUnknownRole;
+
+static roleDesc GoUnknownRoles [] = {
+	{ true, "receiverType", "receiver type" },
+};
 
 static kindDefinition GoKinds[] = {
 	{true, 'p', "package", "packages"},
@@ -99,7 +108,9 @@ static kindDefinition GoKinds[] = {
 	{true, 'v', "var", "variables"},
 	{true, 's', "struct", "structs"},
 	{true, 'i', "interface", "interfaces"},
-	{true, 'm', "member", "struct members"}
+	{true, 'm', "member", "struct members"},
+	{true, 'u', "unknown", "unknown",
+	 .referenceOnly = false, ATTACH_ROLES (GoUnknownRoles)},
 };
 
 static const keywordTable GoKeywordTable[] = {
@@ -506,7 +517,12 @@ static int makeTag (tokenInfo *const token, const goKind kind,
 	const char *const name = vStringValue (token->string);
 
 	tagEntryInfo e;
-	initTagEntry (&e, name, &(GoKinds [kind]));
+
+	if (kind == GOTAG_UNKNOWN)
+		initRefTagEntry (&e, name, &(GoKinds [kind]),
+						 R_GOTAG_UNKNOWN_RECEIVER);
+	else
+		initTagEntry (&e, name, &(GoKinds [kind]));
 
 	if (!GoKinds [kind].enabled)
 		return CORK_NIL;
@@ -531,8 +547,49 @@ static int parsePackage (tokenInfo *const token)
 		return CORK_NIL;
 }
 
+static tokenInfo * parseReceiver (tokenInfo *const token)
+{
+	/* Looking for an identifier before ')'. */
+
+	tokenInfo *sentinel = newToken ();
+	tokenInfo *tmp = NULL;
+	tokenInfo *receiver_type_token = NULL;
+
+	int nest_level = 1;
+	while (nest_level > 0 && !isType (sentinel, TOKEN_EOF))
+	{
+		if (!isType (sentinel, TOKEN_NONE))
+		{
+			if (tmp == NULL)
+				tmp = newToken ();
+			copyToken (tmp, sentinel);
+		}
+
+		readToken (sentinel);
+		if (isType (sentinel, TOKEN_OPEN_PAREN))
+			nest_level++;
+		else if (isType (sentinel, TOKEN_CLOSE_PAREN))
+			nest_level--;
+	}
+
+	if (nest_level == 0 && tmp && isType (tmp, TOKEN_IDENTIFIER))
+	{
+		receiver_type_token = tmp;
+		tmp = NULL;
+	}
+
+	if (tmp)
+		deleteToken (tmp);
+	deleteToken (sentinel);
+
+	readToken (token);
+	return receiver_type_token;
+}
+
 static void parseFunctionOrMethod (tokenInfo *const token, int scope)
 {
+	tokenInfo *receiver_type_token = NULL;
+
 	// FunctionDecl = "func" identifier Signature [ Body ] .
 	// Body         = Block.
 	//
@@ -540,10 +597,10 @@ static void parseFunctionOrMethod (tokenInfo *const token, int scope)
 	// Receiver     = "(" [ identifier ] [ "*" ] BaseTypeName ")" .
 	// BaseTypeName = identifier .
 
-	// Skip over receiver.
+	// Pick up receiver type.
 	readToken (token);
 	if (isType (token, TOKEN_OPEN_PAREN))
-		skipToMatched (token);
+		receiver_type_token = parseReceiver (token);
 
 	if (isType (token, TOKEN_IDENTIFIER))
 	{
@@ -560,6 +617,12 @@ static void parseFunctionOrMethod (tokenInfo *const token, int scope)
 
 		vStringStripLeading (signature);
 		vStringStripTrailing (signature);
+		if (receiver_type_token)
+		{
+			scope = makeTag(receiver_type_token, GOTAG_UNKNOWN,
+							scope, NULL);
+			deleteToken(receiver_type_token);
+		}
 		makeTag (functionToken, GOTAG_FUNCTION, scope, signature->buffer);
 		deleteToken (functionToken);
 		vStringDelete(signature);
@@ -576,6 +639,8 @@ static void parseFunctionOrMethod (tokenInfo *const token, int scope)
 		if (isType (token, TOKEN_OPEN_CURLY))
 			skipToMatched (token);
 	}
+	else if (receiver_type_token)
+		deleteToken(receiver_type_token);
 }
 
 static void parseStructMembers (tokenInfo *const token, int scope)
