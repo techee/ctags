@@ -17,5 +17,5 @@ wrongSyntax0	input.go	/^func () wrongSyntax0() {$/;"	f	package:main
 main.wrongSyntax0	input.go	/^func () wrongSyntax0() {$/;"	f	package:main
 wrongSyntax1	input.go	/^func (+) wrongSyntax1() {$/;"	f	package:main
 main.wrongSyntax1	input.go	/^func (+) wrongSyntax1() {$/;"	f	package:main
-wrongSyntax2	input.go	/^func (a-) wrongSyntax2() {$/;"	f	package:main
-main.wrongSyntax2	input.go	/^func (a-) wrongSyntax2() {$/;"	f	package:main
+wrongSyntax2	input.go	/^func (a-) wrongSyntax2() {$/;"	f	unknown:main.a
+main.a.wrongSyntax2	input.go	/^func (a-) wrongSyntax2() {$/;"	f	unknown:main.a

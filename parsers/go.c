@@ -549,38 +549,31 @@ static int parsePackage (tokenInfo *const token)
 
 static tokenInfo * parseReceiver (tokenInfo *const token)
 {
-	/* Looking for an identifier before ')'. */
-
-	tokenInfo *sentinel = newToken ();
-	tokenInfo *tmp = NULL;
 	tokenInfo *receiver_type_token = NULL;
-
 	int nest_level = 1;
-	while (nest_level > 0 && !isType (sentinel, TOKEN_EOF))
+
+	/* Looking for an identifier before ')'. */
+	while (nest_level > 0 && !isType (token, TOKEN_EOF))
 	{
-		if (!isType (sentinel, TOKEN_NONE))
+		if (isType (token, TOKEN_IDENTIFIER))
 		{
-			if (tmp == NULL)
-				tmp = newToken ();
-			copyToken (tmp, sentinel);
+			if (!receiver_type_token)
+				receiver_type_token = newToken ();
+			copyToken (receiver_type_token, token);
 		}
 
-		readToken (sentinel);
-		if (isType (sentinel, TOKEN_OPEN_PAREN))
+		readToken (token);
+		if (isType (token, TOKEN_OPEN_PAREN))
 			nest_level++;
-		else if (isType (sentinel, TOKEN_CLOSE_PAREN))
+		else if (isType (token, TOKEN_CLOSE_PAREN))
 			nest_level--;
 	}
 
-	if (nest_level == 0 && tmp && isType (tmp, TOKEN_IDENTIFIER))
+	if (nest_level > 0 && receiver_type_token)
 	{
-		receiver_type_token = tmp;
-		tmp = NULL;
+		deleteToken (receiver_type_token);
+		receiver_type_token = NULL;
 	}
-
-	if (tmp)
-		deleteToken (tmp);
-	deleteToken (sentinel);
 
 	readToken (token);
 	return receiver_type_token;
