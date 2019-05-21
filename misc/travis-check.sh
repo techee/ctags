@@ -44,7 +44,7 @@ if [ "$TARGET" = "Unix" ]; then
         (
             cd "${BUILDDIR}"
             ${CONFIGURE_CMDLINE}
-            make -j2 EXTRA_CPPFLAGS=-DEXTERNAL_PARSER_LIST="\\\"Tlib/extra_parser_list.h\\\""
+            make -j2 EXTRA_CPPFLAGS=-DEXTERNAL_PARSER_LIST_FILE="\\\"Tlib/extra_parser_list.h\\\""
 			test $(./ctags --list-languages | wc -l) = 1
             make clean
         )

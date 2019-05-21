@@ -2,7 +2,8 @@
  *
  * Run following command line at the top directory of source tree:
  *
- * $ make EXTRA_CPPFLAGS=-DEXTERNAL_PARSER_LIST="\\\"Tlib/extra_parser_list.h\\\"" V=1
+ * $ make EXTRA_CPPFLAGS=-DEXTERNAL_PARSER_LIST_FILE="\\\"Tlib/extra_parser_list.h\\\"" V=1
  *
  */
-CParser,
+EXTERNAL_PARSER_LIST \
+	CParser,

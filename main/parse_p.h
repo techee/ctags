@@ -18,6 +18,9 @@
 #include "parse.h"
 #include "parsers_p.h"  /* contains list of parsers */
 #include "strlist.h"
+#ifdef EXTERNAL_PARSER_LIST_FILE
+#include EXTERNAL_PARSER_LIST_FILE
+#endif
 
 /*
 *   MACROS
@@ -50,6 +53,9 @@ extern parserDefinitionFunc YAML_PARSER_LIST;
 #endif
 #ifdef HAVE_PACKCC
 extern parserDefinitionFunc PEG_PARSER_LIST;
+#endif
+#ifdef EXTERNAL_PARSER_LIST
+extern parserDefinitionFunc EXTERNAL_PARSER_LIST;
 #endif
 
 extern bool doesLanguageAllowNullTag (const langType language);
